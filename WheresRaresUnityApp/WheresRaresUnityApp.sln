@@ -1,0 +1,23 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{C59EFD6B-E883-E7C6-A29D-DDD04E4F730B}") = "WheresRaresUnityApp", "Assembly-CSharp.csproj", "{3A47A0A7-B86D-3C13-1C52-06D226DCBC5C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A47A0A7-B86D-3C13-1C52-06D226DCBC5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A47A0A7-B86D-3C13-1C52-06D226DCBC5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A47A0A7-B86D-3C13-1C52-06D226DCBC5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A47A0A7-B86D-3C13-1C52-06D226DCBC5C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
