@@ -8,37 +8,59 @@
 using namespace cv;
 
 class HumanDetector {
- public:
+public:
   static std::vector<Rect> detect(Mat image_to_detect) {
     cv::HOGDescriptor hog;
     hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
 
     std::vector<Rect> found_humans;
     hog.detectMultiScale(image_to_detect, found_humans, 0, cv::Size(8, 8),
-                         cv::Size(32, 32), 1.05, 2);  // Default parameters.
+                         cv::Size(16, 16), 1.05, 2);  // Default parameters.
 
-    return std::vector<Rect>();
+    return found_humans;
+  }
+};
+
+class HumanTracker {
+public:
+  static bool trackVideo(std::string video_file) {
+    VideoCapture video(video_file);
+    if(!video.isOpened()) {
+      return false;
+    }
+
+    namedWindow("Display window",1);
+    for (;;) {
+        Mat frame;
+        video >> frame;
+
+        std::vector<Rect> detect_rects = HumanDetector::detect(frame);
+        if (detect_rects.size() > 1) {
+          printf("Start tracking...");
+          // TODO(tullie): Tracking code here.
+        }
+
+        // Display.
+        for (Rect detect_rect : detect_rects) {
+          rectangle(frame, detect_rect, Scalar(0, 255, 0));
+        }
+        imshow("Display window", frame);
+
+        if (waitKey(30) >= 0) {
+          break;
+        }
+    }
+
+    return true;
   }
 };
 
 int main(int argc, char** argv) {
   if (argc != 2) {
-    printf("Usage: %s <detection_image>", argv[0]);
+    printf("Usage: %s <detection_video>", argv[0]);
     return -1;
   }
 
-  Mat image_to_detect;
-  image_to_detect = imread(argv[1], 1);
-
-  std::vector<Rect> human_rects = HumanDetector::detect(image_to_detect);
-
-  for (Rect human_rect : human_rects) {
-    rectangle(image_to_detect, human_rect, Scalar(0, 255, 0));
-  }
-
-  namedWindow("Display Image", WINDOW_AUTOSIZE);
-  imshow("Display Image", image_to_detect);
-  waitKey(0);
-
+  HumanTracker::trackVideo(argv[1]);
   return 0;
 }
