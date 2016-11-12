@@ -30,3 +30,5 @@
 
 vision/data
 vision/build
+
+*.DS_Store
