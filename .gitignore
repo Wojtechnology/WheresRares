@@ -27,3 +27,6 @@
 *.exe
 *.out
 *.app
+
+vision/data
+vision/build
