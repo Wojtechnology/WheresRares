@@ -1,0 +1,3 @@
+/Users/tullie/Developer/wheresRaresh/vision/build/CMakeFiles/edit_cache.dir
+/Users/tullie/Developer/wheresRaresh/vision/build/CMakeFiles/rebuild_cache.dir
+/Users/tullie/Developer/wheresRaresh/vision/build/CMakeFiles/WheresRaresh.dir

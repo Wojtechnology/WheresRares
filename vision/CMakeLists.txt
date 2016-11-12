@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.0)
+project(WhereRaresh)
+find_package(OpenCV REQUIRED)
+add_executable(WheresRaresh src/HumanDetector.cpp)
+target_link_libraries(WheresRaresh ${OpenCV_LIBS})
