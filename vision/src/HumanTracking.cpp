@@ -22,7 +22,7 @@ class HumanDetector {
   vector<Rect> detect(Mat image_to_detect) {
     vector<Rect> detected_humans;
     hog_.detectMultiScale(image_to_detect, detected_humans, 0, cv::Size(8, 8),
-                          cv::Size(16, 16), 1.05, 2);  // Default parameters.
+                          cv::Size(32, 32), 1.05, 2);  // Default parameters.
 
     // Filter redundant rectangles.
     vector<Rect> filtered_detected_humans;
@@ -73,13 +73,12 @@ const int kFrameQueueSize = 50;
 const float kThresholdPercentage = 0.1;
 const bool kDrawBoxesGrouped = true;
 
-//=======global variables========================
 vector<Point2f> features;
 int features_number = 0;
 vector<int> setNumbers;
 
 vector<Point2f> find_features(Mat image, vector<Rect> detected_bounding,
-                             int& features_number) {
+                              int& features_number) {
   vector<Point2f> corners;
   list<CvPoint2D32f> features;
   list<int> set_number;
@@ -155,7 +154,8 @@ int main(int argc, const char* argv[]) {
       vector<Rect> found_filtered;
       found_filtered = human_detector.detect(current_frame);
       if (found_filtered.size() > 0) {
-        features = find_features(current_frame, found_filtered, features_number);
+        features =
+            find_features(current_frame, found_filtered, features_number);
         break;
       }
 
@@ -215,12 +215,24 @@ int main(int argc, const char* argv[]) {
       // Display bounding boxes.
       if (kDrawBoxesGrouped) {
         Rect human_rect = boundingRect(features);
+        const int kHumanWidth = 100;
+        const int kHumanHeight = 200;
 
-        // Ensure human rect has correct dimensions.
-        // int nom = max(human_rect.width, human_rect.height);
-        // int denom = min(human_rect.width, human_rect.height);
-        // if (human_rect.width
-        rectangle(current_frame_copy, human_rect, Scalar(0, 255, 0));
+        // Construct box at box center.
+        Point box_center(human_rect.size().width / 2 + human_rect.x,
+                         human_rect.size().height / 2 + human_rect.y);
+        Rect new_human_rect =
+            Rect(box_center.x - kHumanWidth / 2,
+                 box_center.y - kHumanHeight / 2, kHumanWidth, kHumanHeight);
+
+        rectangle(current_frame_copy, new_human_rect, Scalar(0, 255, 0));
+
+        // Filter box based on aspect ratio.
+        // double aspect_ratio = human_rect.width / (double)human_rect.height;
+        // if (aspect_ratio > 0.5 && aspect_ratio < 1.5) {
+        //   rectangle(current_frame_copy, human_rect, Scalar(0, 255, 0));
+        // }
+
       } else {
         map<int, vector<Point2f>> split_points;
         for (int i = 0; i < features_number; ++i) {
@@ -235,7 +247,8 @@ int main(int argc, const char* argv[]) {
 
       // Display points.
       for (int i = 0; i < features_number; i++) {
-        circle(current_frame_copy, features[i], 1, Scalar(0, 255 * setNumbers[i], 255 * setNumbers[i]), 3);
+        circle(current_frame_copy, features[i], 1,
+               Scalar(0, 255 * setNumbers[i], 255 * setNumbers[i]), 3);
       }
 
       imshow("Display View", current_frame_copy);
