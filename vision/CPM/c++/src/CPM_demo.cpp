@@ -41,16 +41,25 @@ void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
   else
     sample_resized = sample;
 
+  Mat normalized = Mat::zeros(sample_resized.size().height,
+                              sample_resized.size().width, CV_32FC4);
   for (int i = 0; i < sample_resized.size().width; ++i) {
     for (int j = 0; j < sample_resized.size().height; ++j) {
-      sample_resized.at<Vec4f>(i, j)[0] = sample_resized.at<Vec4f>(i, j)[0] / 255 - 0.5;
-      sample_resized.at<Vec4f>(i, j)[1] = sample_resized.at<Vec4f>(i, j)[1] / 255 - 0.5;
-      sample_resized.at<Vec4f>(i, j)[2] = sample_resized.at<Vec4f>(i, j)[2] / 255 - 0.5;
-      sample_resized.at<Vec4f>(i, j)[3] = 1;
+      normalized.at<Vec4f>(i, j)[0] = float(sample_resized.at<Vec4b>(i, j)[0]) / 255 - 0.5;
+      normalized.at<Vec4f>(i, j)[1] = float(sample_resized.at<Vec4b>(i, j)[1]) / 255 - 0.5;
+      normalized.at<Vec4f>(i, j)[2] = float(sample_resized.at<Vec4b>(i, j)[2]) / 255 - 0.5;
+      normalized.at<Vec4f>(i, j)[3] = 0.5;
     }
   }
+  imwrite("resized.png", sample_resized);
+  imwrite("alpha.png", sample_resized);
 
-  split(sample_resized, *input_channels);
+  namedWindow("Display View", CV_WINDOW_AUTOSIZE);
+  imshow("Resized", sample_resized);
+  imshow("Alpha", normalized);
+  waitKey(0);
+
+  split(normalized, *input_channels);
 }
 
 int main(int argc, char** argv) {
