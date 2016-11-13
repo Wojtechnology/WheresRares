@@ -9,6 +9,8 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
+#include "HumanTracking.pch"
+
 using namespace std;
 using namespace cv;
 
@@ -113,6 +115,15 @@ vector<Point2f> find_features(Mat image, vector<Rect> detected_bounding,
   }
   features_number = all_features_number;
   return features_res;
+}
+
+int* GetBoundingBox(int map[]) {
+    int* boundingBox = new int[4];
+    boundingBox[0] = 100;
+    boundingBox[1] = 100;
+    boundingBox[2] = 500;
+    boundingBox[3] = 1000;
+    return boundingBox;
 }
 
 int main(int argc, const char* argv[]) {
