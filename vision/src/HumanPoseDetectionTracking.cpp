@@ -229,10 +229,20 @@ int main(int argc, const char* argv[]) {
 
         rectangle(current_frame_copy, new_human_rect, Scalar(0, 255, 0));
 
-        Mat human_image = current_frame_copy(human_rect);
+        // Do pose on largest possible square
+        int height = current_frame_copy.size().height;
+        int leftBound = max(0, box_center.x - height / 2);
+        leftBound = min(leftBound, current_frame_copy.size().width - height);
+        Rect searchRect(leftBound, 0, height, height);
+        rectangle(current_frame_copy, searchRect, Scalar(255, 0, 0));
+        Mat human_image = current_frame_copy(searchRect);
+
+        // Mat human_image = current_frame_copy(human_rect);
+
         vector<Point> limbs = pose_estimator.detectLimbs(human_image);
         for (Point limb : limbs) {
-          circle(current_frame_copy, limb, 2, Scalar(0, 255, 0), 4);
+          Point disPoint(searchRect.x + limb.x, searchRect.y + limb.y);
+          circle(current_frame_copy, disPoint, 2, Scalar(0, 255, 0), 4);
         }
 
         imshow("Display View", current_frame_copy);
