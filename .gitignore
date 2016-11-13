@@ -69,3 +69,5 @@ sysinfo.txt
 WheresRaresUnityApp/Library/metadata/
 WheresRaresUnityApp/Library/ShaderCache/
 vision/CPM/c++/build
+
+*.swp
