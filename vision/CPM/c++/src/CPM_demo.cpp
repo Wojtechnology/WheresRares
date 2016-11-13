@@ -26,12 +26,9 @@ void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
 
   Mat sample;
   cvtColor(img, sample, COLOR_BGR2BGRA);
-<<<<<<< HEAD
 
   std::cout << "Num channels: " << num_channels << std::endl;
   std::cout << "Num channelsimg: " << img.channels() << std::endl;
-=======
->>>>>>> 3e39e24667d133f9bf6ae333d53f97010eac185a
 
   Mat sample_resized;
   if (sample.size() != input_geometry)
