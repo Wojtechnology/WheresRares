@@ -83,7 +83,7 @@ vector<Point2f> find_features(Mat image, vector<Rect> detected_bounding,
   list<CvPoint2D32f> features;
   list<int> set_number;
 
-  int i, j;
+  int i;
   int all_features_number = 0;
   for (i = 0; i < detected_bounding.size(); i++) {
     Rect human_detector = detected_bounding[i];
@@ -219,13 +219,13 @@ int main(int argc, const char* argv[]) {
         const int kHumanHeight = 200;
 
         // Construct box at box center.
-        Point box_center(human_rect.size().width / 2 + human_rect.x,
-                         human_rect.size().height / 2 + human_rect.y);
-        Rect new_human_rect =
-            Rect(box_center.x - kHumanWidth / 2,
-                 box_center.y - kHumanHeight / 2, kHumanWidth, kHumanHeight);
+        //Point box_center(human_rect.size().width / 2 + human_rect.x,
+        //                 human_rect.size().height / 2 + human_rect.y);
+        // Rect new_human_rect =
+        //    Rect(box_center.x - kHumanWidth / 2,
+        //         box_center.y - kHumanHeight / 2, kHumanWidth, kHumanHeight);
 
-        rectangle(current_frame_copy, new_human_rect, Scalar(0, 255, 0));
+        rectangle(current_frame_copy, human_rect, Scalar(0, 255, 0));
 
         // Filter box based on aspect ratio.
         // double aspect_ratio = human_rect.width / (double)human_rect.height;
