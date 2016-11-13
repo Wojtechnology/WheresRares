@@ -8,6 +8,8 @@ public class CameraLoader : MonoBehaviour {
 	// Use this for initialization
 	WebCamTexture camera;
 	Color32[] map;
+
+	bool isTracking;
 	void Start () {
 		//var deviceName = WebCamTexture.devices[0].name;
 		//camera = new WebCamTexture(deviceName, 1280, 720, 30);
@@ -22,6 +24,7 @@ public class CameraLoader : MonoBehaviour {
 		//renderer.material.mainTexture = camera;
 		camera.Play();
 
+		isTracking = false;
 
 		Logger.MyDelegate callback_delegate = new Logger.MyDelegate( Logger.CallBackFunction );
 		// Convert callback_delegate into a function pointer that can be
@@ -35,6 +38,7 @@ public class CameraLoader : MonoBehaviour {
 	// Update is called once per frame
 	bool first = true;
 	void Update () {
+		// TODO: Move this out
 		if (camera.width <= 16) {
 			Debug.Log ("Still waiting another frame for correct info...");
 			return;
@@ -44,6 +48,14 @@ public class CameraLoader : MonoBehaviour {
 			first = false;
 		}
 		camera.GetPixels32 (map);
+
+		if (isTracking) {
+			IntPtr rect = CVPlugin.Track (CameraUtils.Color32ArrayToByteArray (map), camera.height, camera.width);
+			int[] a = new int[4];
+			Marshal.Copy (rect, a, 0, 4);
+			Debug.Log ("woot " + a[0] + " " + a[1] + " " + a[2] + " " + a[3]);
+			return;
+		}
 //		int[] test = { 1, 2, 3, 4 };
 //
 //		int[] a = new int[3];
@@ -61,10 +73,15 @@ public class CameraLoader : MonoBehaviour {
 //			Debug.Log(test[i]);
 //		}
 
-		byte[] byte_map = CameraUtils.Color32ArrayToByteArray (map);
-		int[] a = new int[4];
-		IntPtr b = CVPlugin.GetQuickerBoundingBox (byte_map, camera.height, camera.width);
-		Marshal.Copy (b,a,0,3);
-		Debug.Log ("woot " + a[0] + " " + a[1] + " " + a[2] + " " + a[3]);
+//		byte[] byte_map = CameraUtils.Color32ArrayToByteArray (map);
+//		int[] a = new int[4];
+//		IntPtr b = CVPlugin.GetQuickerBoundingBox (byte_map, camera.height, camera.width);
+//		Marshal.Copy (b,a,0,3);
+//		Debug.Log ("woot " + a[0] + " " + a[1] + " " + a[2] + " " + a[3]);
+
+		if (CVPlugin.DetectPerson (CameraUtils.Color32ArrayToByteArray (map), camera.height, camera.width)) {
+			Debug.Log ("There is a person!");
+			isTracking = true;
+		}
 	}
 }

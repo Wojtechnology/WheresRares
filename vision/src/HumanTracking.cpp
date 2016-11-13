@@ -2,6 +2,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <string>
 #include "opencv/cv.h"
 
 #include <opencv2/opencv.hpp>
@@ -87,6 +88,10 @@ vector<Point2f> features;
 int features_number = 0;
 vector<int> setNumbers;
 
+Mat current_frame;
+Mat current_frame_copy;
+Mat next_frame;
+
 vector<Point2f> find_features(Mat image, vector<Rect> detected_bounding,
                               int& features_number) {
   vector<Point2f> corners;
@@ -129,30 +134,8 @@ void InitCameraPlugin(int height, int width) {
     human_detector = HumanDetector(width, height);
 }
 
-int* GetBoundingBox(int map[]) {
-    int* boundingBox = new int[4];
-    boundingBox[0] = 100;
-    boundingBox[1] = 100;
-    boundingBox[2] = 500;
-    boundingBox[3] = 1000;
-    return boundingBox;
-}
-
-int* GetQuickerBoundingBox(unsigned char* map, int height, int width) {
-//    Mat current_frame_copy;
-//    Mat current_frame = Mat(height,width,CV_8UC4,map);
-//    // detection step
-//    current_frame.copyTo(current_frame_copy);
-//    cvtColor(current_frame, current_frame, CV_BGR2GRAY);
-//    vector<Rect> found_filtered;
-//    found_filtered = human_detector.detect(current_frame);
-    Debug("poop");
-    return nullptr;
-}
-
 bool DetectPerson(unsigned char* map, int height, int width) {
-    Mat current_frame_copy;
-    Mat current_frame = Mat(height,width,CV_8UC4,map);
+    current_frame = Mat(height,width,CV_8UC4,map);
     //HumanDetector human_detector(width, height);
     // detection step
     current_frame.copyTo(current_frame_copy);
@@ -167,6 +150,65 @@ bool DetectPerson(unsigned char* map, int height, int width) {
     return false;
     //imshow("Display View", current_frame_copy);
     //waitKey(5);
+}
+
+int* Track(unsigned char* map, int height, int width) {
+    Debug("TRACKINGGGG");
+    int threshold = features_number * kThresholdPercentage;
+    current_frame_copy.setTo(Scalar(0, 0, 0));
+    next_frame = Mat(height,width,CV_8UC4,map);
+    next_frame.copyTo(current_frame_copy);
+    cvtColor(next_frame, next_frame, CV_BGR2GRAY);
+    
+    vector<Point2f> tracked_features;
+    vector<uchar> status;
+    vector<float> feature_errors;
+    calcOpticalFlowPyrLK(current_frame, next_frame, features,
+                         tracked_features, status, feature_errors);
+    
+    // Update tracking info.
+    int new_feature_number = 0;
+    vector<int> temp_set_number(features_number);
+    int j = 0;
+    for (int i = 0; i < features_number; i++) {
+        if (status[i] == 1) {
+            new_feature_number++;
+            temp_set_number[j] = setNumbers[i];
+            j++;
+        }
+    }
+    setNumbers = temp_set_number;
+    features_number = new_feature_number;
+    features = tracked_features;
+    next_frame.copyTo(current_frame);
+    
+    Rect human_rect;
+    // Display bounding boxes.
+    if (kDrawBoxesGrouped) {
+        human_rect = boundingRect(features);
+        
+        rectangle(current_frame_copy, human_rect, Scalar(0, 255, 0));
+        
+    } else {
+        std::map<int, vector<Point2f>> split_points;
+        for (int i = 0; i < features_number; ++i) {
+            split_points[setNumbers[i]].push_back(features[i]);
+        }
+        
+        for (const auto& it : split_points) {
+            human_rect = boundingRect(it.second);
+            rectangle(current_frame_copy, human_rect, Scalar(0, 255, 0));
+        }
+    }
+    
+    // Display points.
+//    for (int i = 0; i < features_number; i++) {
+//        circle(current_frame_copy, features[i], 1,
+//               Scalar(0, 255 * setNumbers[i], 255 * setNumbers[i]), 3);
+//    }
+    
+    int* values = new int[4] {human_rect.x, human_rect.y, human_rect.width, human_rect.height};
+    return values;
 }
 
 int main(int argc, const char* argv[]) {
