@@ -26,13 +26,14 @@ void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
 
   Mat sample;
   if (img.channels() == 3) {
-    cvtColor(img, sample, COLOR_BGR2BGRA);
-  } else {
+    cvtColor(img, sample, COLOR_RGB2BGRA);
+  } else if (img.channels() == 4) {
+    cvtColor(img, sample, COLOR_RGBA2BGRA);
     sample = img;
+  } else {
+    printf("Image not supported");
+    return;
   }
-
-  std::cout << "Num channels: " << num_channels << std::endl;
-  std::cout << "Num channelsimg: " << img.channels() << std::endl;
 
   Mat sample_resized;
   if (sample.size() != input_geometry)
@@ -42,16 +43,10 @@ void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
 
   for (int i = 0; i < sample_resized.size().width; ++i) {
     for (int j = 0; j < sample_resized.size().height; ++j) {
-      sample_resized.at<Vec4f>(i, j)[0] = sample_resized.at<Vec4f>(i, j)[0] / 255;
-      sample_resized.at<Vec4f>(i, j)[1] = sample_resized.at<Vec4f>(i, j)[1] / 255;
-      sample_resized.at<Vec4f>(i, j)[2] = sample_resized.at<Vec4f>(i, j)[2] / 255;
+      sample_resized.at<Vec4f>(i, j)[0] = sample_resized.at<Vec4f>(i, j)[0] / 255 - 0.5;
+      sample_resized.at<Vec4f>(i, j)[1] = sample_resized.at<Vec4f>(i, j)[1] / 255 - 0.5;
+      sample_resized.at<Vec4f>(i, j)[2] = sample_resized.at<Vec4f>(i, j)[2] / 255 - 0.5;
       sample_resized.at<Vec4f>(i, j)[3] = 1;
-    }
-  }
-
-  for (int i = 0; i < sample_resized.size().width; ++i) {
-    for (int j = 0; j < sample_resized.size().height; ++j) {
-      sample_resized.at<float>(i, j) = sample_resized.at<float>(i, j) * 255;
     }
   }
 
@@ -92,34 +87,24 @@ int main(int argc, char** argv) {
 
   float* channel = output_layer->mutable_cpu_data();
   for (int i = 0; i < output_layer->channels(); ++i) {
-    Mat class_heatmap(output_layer->height(), output_layer->width(), CV_32FC1,
+    Mat class_heatmap(output_layer->height(), output_layer->width(), CV_32F,
                       channel);
     channel += output_layer->width() * output_layer->height();
 
+    double min, max;
+    cv::minMaxLoc(class_heatmap, &min, &max);
     for (int i = 0; i < class_heatmap.size().width; ++i) {
       for (int j = 0; j < class_heatmap.size().height; ++j) {
-        class_heatmap.at<float>(i, j) = class_heatmap.at<float>(i, j) * 255;
+        class_heatmap.at<float>(i, j) = (class_heatmap.at<float>(i, j) - min) / (max - min);
       }
     }
-
-    // double min, max;
-    // cv::Point min_loc, max_loc;
-    // cv::minMaxLoc(class_heatmap, &min, &max, &min_loc, &max_loc);
-    // std::cout << class_heatmap << std::endl;
+    std::cout << class_heatmap << std::endl;
 
     // circle(class_heatmap, max_loc, 1, Scalar(255, 255, 255), 3);
     // circle(class_heatmap, min_loc, 1, Scalar(255, 255, 255), 3);
 
     namedWindow("Display View", CV_WINDOW_AUTOSIZE);
     imshow("Display View", class_heatmap);
-
     waitKey(0);
   }
-
-  // for (int i = 0; i < output_layer->width(); ++i) {
-  //   for (int j = 0; j < output_layer->height(); ++j) {
-  //     class_heatmap.at<float>(i, j) = 0;
-  //   }
-  // }
-
 }
