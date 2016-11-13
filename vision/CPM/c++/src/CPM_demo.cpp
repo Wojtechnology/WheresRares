@@ -25,7 +25,11 @@ void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
                 int num_channels, const Size& input_geometry) {
 
   Mat sample;
-  cvtColor(img, sample, COLOR_BGR2BGRA);
+  if (img.channels() == 3) {
+    cvtColor(img, sample, COLOR_BGR2BGRA);
+  } else {
+    sample = img;
+  }
 
   std::cout << "Num channels: " << num_channels << std::endl;
   std::cout << "Num channelsimg: " << img.channels() << std::endl;
