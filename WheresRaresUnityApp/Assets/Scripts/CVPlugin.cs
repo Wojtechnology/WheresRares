@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 using System.Runtime.InteropServices;
+using System;
 
 public static class CVPlugin {
 
-	[DllImport ("WheresRares")]
-	public extern static int AddTwoIntegers (int a, int b);
+	[DllImport ("CVCode")]
+	public static extern void SetDebugFunction( IntPtr fp );
 
-	[DllImport ("WheresRares")]
-	public extern static double LogBase10 (double a);
+	[DllImport ("CVCode")]
+	public extern static System.IntPtr GetBoundingBox (int[] map);
 
-	[DllImport ("WheresRares")]
-	public extern static int GetArray (int[] a);
+	[DllImport ("CVCode")]
+	public extern static System.IntPtr GetQuickerBoundingBox (byte[] map, int height, int width);
 
-	[DllImport ("WheresRares")]
-	public extern static System.IntPtr ArrayTest (int[] a);
+	[DllImport ("CVCode")]
+	public extern static void InitCameraPlugin (int height, int width);
 
 }

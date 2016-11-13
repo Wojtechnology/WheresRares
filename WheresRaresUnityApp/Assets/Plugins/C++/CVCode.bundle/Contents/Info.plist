@@ -7,13 +7,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
-	<string>WheresRares</string>
+	<string>CVCode</string>
 	<key>CFBundleIdentifier</key>
-	<string>wojtechnology.WheresRares</string>
+	<string>wojtechnology.CVCode</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>WheresRares</string>
+	<string>CVCode</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
