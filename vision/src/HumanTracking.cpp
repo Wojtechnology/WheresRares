@@ -9,8 +9,16 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
+#include "HumanTracking.pch"
+
 using namespace std;
 using namespace cv;
+
+FuncPtr Debug;
+
+void SetDebugFunction( FuncPtr fp ) {
+  Debug = fp;
+}
 
 class HumanDetector {
  public:
@@ -69,10 +77,12 @@ class HumanDetector {
   int view_height_;
 };
 
+
 const int kFrameQueueSize = 50;
 const float kThresholdPercentage = 0.1;
 const bool kDrawBoxesGrouped = true;
 
+HumanDetector human_detector = HumanDetector(0,0);
 vector<Point2f> features;
 int features_number = 0;
 vector<int> setNumbers;
@@ -113,6 +123,50 @@ vector<Point2f> find_features(Mat image, vector<Rect> detected_bounding,
   }
   features_number = all_features_number;
   return features_res;
+}
+
+void InitCameraPlugin(int height, int width) {
+    human_detector = HumanDetector(width, height);
+}
+
+int* GetBoundingBox(int map[]) {
+    int* boundingBox = new int[4];
+    boundingBox[0] = 100;
+    boundingBox[1] = 100;
+    boundingBox[2] = 500;
+    boundingBox[3] = 1000;
+    return boundingBox;
+}
+
+int* GetQuickerBoundingBox(unsigned char* map, int height, int width) {
+//    Mat current_frame_copy;
+//    Mat current_frame = Mat(height,width,CV_8UC4,map);
+//    // detection step
+//    current_frame.copyTo(current_frame_copy);
+//    cvtColor(current_frame, current_frame, CV_BGR2GRAY);
+//    vector<Rect> found_filtered;
+//    found_filtered = human_detector.detect(current_frame);
+    Debug("poop");
+    return nullptr;
+}
+
+bool DetectPerson(unsigned char* map, int height, int width) {
+    Mat current_frame_copy;
+    Mat current_frame = Mat(height,width,CV_8UC4,map);
+    //HumanDetector human_detector(width, height);
+    // detection step
+    current_frame.copyTo(current_frame_copy);
+    cvtColor(current_frame, current_frame, CV_BGR2GRAY);
+    vector<Rect> found_filtered;
+    found_filtered = human_detector.detect(current_frame);
+    if (found_filtered.size() > 0) {
+        features =
+        find_features(current_frame, found_filtered, features_number);
+        return true;
+    }
+    return false;
+    //imshow("Display View", current_frame_copy);
+    //waitKey(5);
 }
 
 int main(int argc, const char* argv[]) {
