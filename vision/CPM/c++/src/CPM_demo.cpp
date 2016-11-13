@@ -24,16 +24,7 @@ void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
                 int num_channels, const Size& input_geometry) {
   /* Convert the input image to the input image format of the network. */
   Mat sample;
-  if (img.channels() == 3 && num_channels == 1)
-    cvtColor(img, sample, COLOR_BGR2GRAY);
-  else if (img.channels() == 4 && num_channels == 1)
-    cvtColor(img, sample, COLOR_BGRA2GRAY);
-  else if (img.channels() == 4 && num_channels == 3)
-    cvtColor(img, sample, COLOR_BGRA2BGR);
-  else if (img.channels() == 1 && num_channels == 3)
-    cvtColor(img, sample, COLOR_GRAY2BGR);
-  else
-    sample = img;
+  cvtColor(img, sample, COLOR_BGR2BGRA);
 
   Mat sample_resized;
   if (sample.size() != input_geometry)
@@ -41,11 +32,14 @@ void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
   else
     sample_resized = sample;
 
-  Mat sample_float;
-  if (num_channels == 3)
-    sample_resized.convertTo(sample_float, CV_32FC3);
-  else
-    sample_resized.convertTo(sample_float, CV_32FC1);
+  for (int i = 0; i < sample_resized.size().width; ++i) {
+    for (int j = 0; j < sample_resized.size().height; ++j) {
+      sample_resized.at<Vec4f>(i, j)[0] = sample_resized.at<Vec4f>(i, j)[0] / 255;
+      sample_resized.at<Vec4f>(i, j)[1] = sample_resized.at<Vec4f>(i, j)[1] / 255;
+      sample_resized.at<Vec4f>(i, j)[2] = sample_resized.at<Vec4f>(i, j)[2] / 255;
+      sample_resized.at<Vec4f>(i, j)[3] = 1;
+    }
+  }
 
   split(sample_resized, *input_channels);
 }
@@ -88,22 +82,23 @@ int main(int argc, char** argv) {
                       channel);
     channel += output_layer->width() * output_layer->height();
 
-    // double min, max;
-    // cv::Point min_loc, max_loc;
-    // cv::minMaxLoc(class_heatmap, &min, &max, &min_loc, &max_loc);
-    std::cout << class_heatmap << std::endl;
-
-    // circle(class_heatmap, max_loc, 1, Scalar(255, 255, 255), 3);
-    // circle(class_heatmap, min_loc, 1, Scalar(255, 255, 255), 3);
-
     for (int i = 0; i < class_heatmap.size().width; ++i) {
       for (int j = 0; j < class_heatmap.size().height; ++j) {
         class_heatmap.at<float>(i, j) = class_heatmap.at<float>(i, j) * 255;
       }
     }
 
+    // double min, max;
+    // cv::Point min_loc, max_loc;
+    // cv::minMaxLoc(class_heatmap, &min, &max, &min_loc, &max_loc);
+    // std::cout << class_heatmap << std::endl;
+
+    // circle(class_heatmap, max_loc, 1, Scalar(255, 255, 255), 3);
+    // circle(class_heatmap, min_loc, 1, Scalar(255, 255, 255), 3);
+
     namedWindow("Display View", CV_WINDOW_AUTOSIZE);
     imshow("Display View", class_heatmap);
+
     waitKey(0);
   }
 
