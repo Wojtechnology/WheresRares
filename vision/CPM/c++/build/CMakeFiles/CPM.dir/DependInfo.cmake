@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/tullie/Developer/CPM/c++/src/CPM_demo.cpp" "/Users/tullie/Developer/CPM/c++/build/CMakeFiles/CPM.dir/src/CPM_demo.cpp.o"
+  "/Users/wojtekswiderski/Documents/GitHub/WheresRares/vision/CPM/c++/src/CPM_demo.cpp" "/Users/wojtekswiderski/Documents/GitHub/WheresRares/vision/CPM/c++/build/CMakeFiles/CPM.dir/src/CPM_demo.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "Clang")
 
@@ -18,14 +18,15 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/Users/tullie/Developer/caffe/src"
+  "/Users/wojtekswiderski/Documents/GitHub/caffe/src"
+  "/usr/local/include/boost_1_60_0"
   "/usr/local/include"
-  "/Users/tullie/Developer/caffe/build/include"
+  "/Users/wojtekswiderski/Documents/GitHub/caffe/build/include"
   "/usr/local/Cellar/hdf5/1.8.17/include"
   "/usr/local/opt/szip/include"
   "/usr/local/include/opencv"
   "/System/Library/Frameworks/Accelerate.framework/Versions/Current/Frameworks/vecLib.framework/Versions/Current/Headers"
-  "/Users/tullie/Developer/caffe/include"
+  "/Users/wojtekswiderski/Documents/GitHub/caffe/include"
   )
 
 # Targets to which this target links.
