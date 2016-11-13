@@ -6,7 +6,7 @@ OPENCV_INSTALL_MODULES:=on
 OPENCV_LIB_TYPE:=STATIC
 include $(CVROOT)/OpenCV.mk
 
-LOCAL_MODULE := libCVCode2
+LOCAL_MODULE := libCVCode
 
 CODE_PATH := ../cv
 

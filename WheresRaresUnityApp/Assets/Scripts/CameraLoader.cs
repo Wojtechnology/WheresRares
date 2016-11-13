@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 public class CameraLoader : MonoBehaviour {
 
@@ -9,7 +10,12 @@ public class CameraLoader : MonoBehaviour {
 	WebCamTexture camera;
 	Color32[] map;
 
-	GameObject cube;
+	const int STATIC_THRESHOLD = 5;
+	int same_count;
+	int[] other = { 0, 0, 0, 0 };
+
+	int prev_height;
+	GameObject bear;
 
 	bool isTracking;
 	void Start () {
@@ -27,7 +33,10 @@ public class CameraLoader : MonoBehaviour {
 		camera.Play();
 
 		isTracking = false;
-
+		same_count = 0;
+		prev_height = 0;
+		bear = GameObject.Find ("swag");
+		bear.transform.position = new Vector3 (0, 4.49f, 0);
 		Logger.MyDelegate callback_delegate = new Logger.MyDelegate( Logger.CallBackFunction );
 		// Convert callback_delegate into a function pointer that can be
 		// used in unmanaged code.
@@ -55,9 +64,25 @@ public class CameraLoader : MonoBehaviour {
 			IntPtr rect = CVPlugin.Track (CameraUtils.Color32ArrayToByteArray (map), camera.height, camera.width);
 			int[] a = new int[4];
 			Marshal.Copy (rect, a, 0, 4);
-			float x = ((float)a [0]) / 100;
+			if (Enumerable.SequenceEqual (a, other)) {
+				same_count += 1;
+				Debug.Log ("SAME");
+				if (same_count > STATIC_THRESHOLD) {
+					// Stop tracking if static for too long
+					Debug.Log("START TRACKING AGAIN");
+					same_count = 0;
+					isTracking = false;
+				}
+			}
+			float x = ((float)a [1]) / 50;
+			float y = ((float)a [0]) / 50;
+			float z = ((float)a [3] / 50);
 			Debug.Log (x);
-			cube.transform.position = new Vector3 (x, 0.5f, 0);
+			bear.transform.position = new Vector3 (x, 4.49f, z);
+
+			for (int i = 0; i < 4; i++) {
+				other [i] = a [i];
+			}
 			return;
 		}
 //		int[] test = { 1, 2, 3, 4 };
@@ -86,8 +111,7 @@ public class CameraLoader : MonoBehaviour {
 		if (CVPlugin.DetectPerson (CameraUtils.Color32ArrayToByteArray (map), camera.height, camera.width)) {
 			Debug.Log ("There is a person!");
 			isTracking = true;
-			cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			cube.transform.position = new Vector3 (0, 0, 0);
+
 		}
 	}
 }
