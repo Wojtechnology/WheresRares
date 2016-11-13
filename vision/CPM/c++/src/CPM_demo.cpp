@@ -88,13 +88,19 @@ int main(int argc, char** argv) {
                       channel);
     channel += output_layer->width() * output_layer->height();
 
-    double min, max;
-    cv::Point min_loc, max_loc;
-    cv::minMaxLoc(class_heatmap, &min, &max, &min_loc, &max_loc);
+    // double min, max;
+    // cv::Point min_loc, max_loc;
+    // cv::minMaxLoc(class_heatmap, &min, &max, &min_loc, &max_loc);
     std::cout << class_heatmap << std::endl;
 
-    circle(class_heatmap, max_loc, 1, Scalar(255, 255, 255), 3);
-    circle(class_heatmap, min_loc, 1, Scalar(255, 255, 255), 3);
+    // circle(class_heatmap, max_loc, 1, Scalar(255, 255, 255), 3);
+    // circle(class_heatmap, min_loc, 1, Scalar(255, 255, 255), 3);
+
+    for (int i = 0; i < class_heatmap.size().width; ++i) {
+      for (int j = 0; j < class_heatmap.size().height; ++j) {
+        class_heatmap.at<float>(i, j) = class_heatmap.at<float>(i, j) * 255;
+      }
+    }
 
     namedWindow("Display View", CV_WINDOW_AUTOSIZE);
     imshow("Display View", class_heatmap);
