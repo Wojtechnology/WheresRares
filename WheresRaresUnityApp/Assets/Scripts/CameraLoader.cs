@@ -9,6 +9,8 @@ public class CameraLoader : MonoBehaviour {
 	WebCamTexture camera;
 	Color32[] map;
 
+	GameObject cube;
+
 	bool isTracking;
 	void Start () {
 		//var deviceName = WebCamTexture.devices[0].name;
@@ -53,7 +55,9 @@ public class CameraLoader : MonoBehaviour {
 			IntPtr rect = CVPlugin.Track (CameraUtils.Color32ArrayToByteArray (map), camera.height, camera.width);
 			int[] a = new int[4];
 			Marshal.Copy (rect, a, 0, 4);
-			Debug.Log ("woot " + a[0] + " " + a[1] + " " + a[2] + " " + a[3]);
+			float x = ((float)a [0]) / 100;
+			Debug.Log (x);
+			cube.transform.position = new Vector3 (x, 0.5f, 0);
 			return;
 		}
 //		int[] test = { 1, 2, 3, 4 };
@@ -82,6 +86,8 @@ public class CameraLoader : MonoBehaviour {
 		if (CVPlugin.DetectPerson (CameraUtils.Color32ArrayToByteArray (map), camera.height, camera.width)) {
 			Debug.Log ("There is a person!");
 			isTracking = true;
+			cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+			cube.transform.position = new Vector3 (0, 0, 0);
 		}
 	}
 }
