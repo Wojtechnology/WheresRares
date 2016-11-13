@@ -13,6 +13,7 @@ void WrapInputLayer(std::vector<Mat>* input_channels, const Net<float>& net) {
   int width = input_layer->width();
   int height = input_layer->height();
   float* input_data = input_layer->mutable_cpu_data();
+  std::cout << input_layer->channels() << std::endl;
   for (int i = 0; i < input_layer->channels(); ++i) {
     Mat channel(height, width, CV_32FC1, input_data);
     input_channels->push_back(channel);
@@ -22,18 +23,12 @@ void WrapInputLayer(std::vector<Mat>* input_channels, const Net<float>& net) {
 
 void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
                 int num_channels, const Size& input_geometry) {
-  /* Convert the input image to the input image format of the network. */
+
   Mat sample;
-  if (img.channels() == 3 && num_channels == 1)
-    cvtColor(img, sample, COLOR_BGR2GRAY);
-  else if (img.channels() == 4 && num_channels == 1)
-    cvtColor(img, sample, COLOR_BGRA2GRAY);
-  else if (img.channels() == 4 && num_channels == 3)
-    cvtColor(img, sample, COLOR_BGRA2BGR);
-  else if (img.channels() == 1 && num_channels == 3)
-    cvtColor(img, sample, COLOR_GRAY2BGR);
-  else
-    sample = img;
+  cvtColor(img, sample, COLOR_BGR2BGRA);
+
+  std::cout << "Num channels: " << num_channels << std::endl;
+  std::cout << "Num channelsimg: " << img.channels() << std::endl;
 
   Mat sample_resized;
   if (sample.size() != input_geometry)
@@ -46,6 +41,12 @@ void Preprocess(const Mat& img, std::vector<Mat>* input_channels,
     sample_resized.convertTo(sample_float, CV_32FC3);
   else
     sample_resized.convertTo(sample_float, CV_32FC1);
+
+  for (int i = 0; i < sample_resized.size().width; ++i) {
+    for (int j = 0; j < sample_resized.size().height; ++j) {
+      sample_resized.at<float>(i, j) = sample_resized.at<float>(i, j) * 255;
+    }
+  }
 
   split(sample_resized, *input_channels);
 }
