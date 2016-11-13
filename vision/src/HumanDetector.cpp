@@ -5,7 +5,6 @@
 #include <opencv2/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/video/background_segm.hpp>
-#include <opencv2/bgsegm.hpp>
 
 using namespace cv;
 
