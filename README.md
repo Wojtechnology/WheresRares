@@ -3,6 +3,7 @@
 Convolutional Pose Machine predictor implementation in C++ built at Cal Hacks 3.0.
 
 Example video (each green dot is a body part): [Convolutional Pose Machine](https://www.youtube.com/watch?v=IwNG11SdNKY)
+![Conv Pose GIF](https://github.com/Wojtechnology/WheresRares/blob/master/data/convposegif.gif)
 
 ## Details
 The pretrained model was taken from https://github.com/shihenw/convolutional-pose-machines-release,
